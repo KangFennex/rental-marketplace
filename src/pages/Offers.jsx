@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   collection,
   getDocs,
@@ -6,12 +6,11 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
-} from 'firebase/firestore';
-import { db } from '../firebase.config';
-import { toast } from 'react-toastify';
-import Spinner from '../components/Spinner';
-import ListingItem from '../components/ListingItem';
+} from "firebase/firestore";
+import { db } from "../firebase.config";
+import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
+import ListingItem from "../components/ListingItem";
 
 function Offers() {
   const [listings, setListings] = useState(null);
@@ -21,13 +20,13 @@ function Offers() {
     const fetchListings = async () => {
       try {
         // Get reference
-        const listingsRef = collection(db, 'listings');
+        const listingsRef = collection(db, "listings");
 
         // Create a query
         const q = query(
           listingsRef,
-          where('offer', '==', true),
-          orderBy('timestamp', 'desc'),
+          where("offer", "==", true),
+          orderBy("timestamp", "desc"),
           limit(10)
         );
 
@@ -46,7 +45,7 @@ function Offers() {
         setListings(listings);
         setLoading(false);
       } catch (error) {
-        toast.error('Could not fetch listings');
+        toast.error("Could not fetch listings");
       }
     };
 
@@ -56,9 +55,7 @@ function Offers() {
   return (
     <div className="category">
       <header>
-        <p className="pageHeader">
-        Offers
-        </p>
+        <p className="pageHeader">Offers</p>
       </header>
 
       {loading ? (

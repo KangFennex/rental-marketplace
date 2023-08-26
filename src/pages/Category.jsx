@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   collection,
   getDocs,
@@ -7,12 +7,11 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
-} from 'firebase/firestore';
-import { db } from '../firebase.config';
-import { toast } from 'react-toastify';
-import Spinner from '../components/Spinner';
-import ListingItem from '../components/ListingItem';
+} from "firebase/firestore";
+import { db } from "../firebase.config";
+import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
+import ListingItem from "../components/ListingItem";
 
 function Category() {
   const [listings, setListings] = useState(null);
@@ -24,13 +23,13 @@ function Category() {
     const fetchListings = async () => {
       try {
         // Get reference
-        const listingsRef = collection(db, 'listings');
+        const listingsRef = collection(db, "listings");
 
         // Create a query
         const q = query(
           listingsRef,
-          where('type', '==', params.categoryName),
-          orderBy('timestamp', 'desc'),
+          where("type", "==", params.categoryName),
+          orderBy("timestamp", "desc"),
           limit(10)
         );
 
@@ -49,7 +48,7 @@ function Category() {
         setListings(listings);
         setLoading(false);
       } catch (error) {
-        toast.error('Could not fetch listings');
+        toast.error("Could not fetch listings");
       }
     };
 
@@ -60,9 +59,9 @@ function Category() {
     <div className="category">
       <header>
         <p className="pageHeader">
-          {params.categoryName === 'rent'
-            ? 'Places for rent'
-            : 'Places for sale'}
+          {params.categoryName === "rent"
+            ? "Places for rent"
+            : "Places for sale"}
         </p>
       </header>
 
