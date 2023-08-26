@@ -1,75 +1,80 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams, usePrams } from 'react-router-dom';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper-bundle.css';
-import { getDoc, doc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { db } from '../firebase.config';
-import Spinner from '../components/Spinner';
-import shareIcon from '../assets/svg/shareIcon.svg';
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/swiper-bundle.css'
+import { getDoc, doc } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
+import { db } from '../firebase.config'
+import Spinner from '../components/Spinner'
+import shareIcon from '../assets/svg/shareIcon.svg'
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
 
 function Listing() {
-  const [listing, setListing] = useState(null);
-  const [loading, setLoading] = useState(null);
-  const [shareLinkCopied, setShareLinkCopied] = useState(null);
+  const [listing, setListing] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [shareLinkCopied, setShareLinkCopied] = useState(false)
 
-  const navigate = useNavigate();
-  const params = useParams();
-  const auth = getAuth();
+  const navigate = useNavigate()
+  const params = useParams()
+  const auth = getAuth()
 
   useEffect(() => {
     const fetchListing = async () => {
-      const docRef = doc(db, 'listings', params.listingId);
-      const docSnap = await getDoc(docRef);
+      const docRef = doc(db, 'listings', params.listingId)
+      const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {
-        setListing(docSnap.data());
+        setListing(docSnap.data())
+        setLoading(false)
       }
-    };
-    fetchListing();
-  }, [navigate, params.listingId]);
+    }
+
+    fetchListing()
+  }, [navigate, params.listingId])
 
   if (loading) {
-    return <Spinner />;
+    return <Spinner />
   }
 
   return (
     <main>
+      <Helmet>
+        <title>{listing.name}</title>
+      </Helmet>
       <Swiper slidesPerView={1} pagination={{ clickable: true }}>
         {listing.imgUrls.map((url, index) => (
           <SwiperSlide key={index}>
             <div
               style={{
-                background: `url(${listing.imgUrls[index]} 
-              center no-repeat)`,
-              backgroundSize: 'cover'
+                background: `url(${listing.imgUrls[index]}) center no-repeat`,
+                backgroundSize: 'cover',
               }}
-              className="swiperSlideDiv"
+              className='swiperSlideDiv'
             ></div>
           </SwiperSlide>
         ))}
       </Swiper>
 
       <div
-        className="shareIconDiv"
+        className='shareIconDiv'
         onClick={() => {
-          navigator.clipboard.writeText(window.location.href);
-          setShareLinkCopied(true);
+          navigator.clipboard.writeText(window.location.href)
+          setShareLinkCopied(true)
           setTimeout(() => {
-            setShareLinkCopied(false);
-          }, 2000);
+            setShareLinkCopied(false)
+          }, 2000)
         }}
       >
-        <img src={shareIcon} alt="" />
+        <img src={shareIcon} alt='' />
       </div>
 
-      {shareLinkCopied && <p className="linkCopied">Link Copied!</p>}
+      {shareLinkCopied && <p className='linkCopied'>Link Copied!</p>}
 
-      <div className="listingDetails">
-        <p className="listingName">
+      <div className='listingDetails'>
+        <p className='listingName'>
           {listing.name} - $
           {listing.offer
             ? listing.discountedPrice
@@ -79,17 +84,17 @@ function Listing() {
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         </p>
-        <p className="listingLocation">{listing.location}</p>
-        <p className="listingType">
+        <p className='listingLocation'>{listing.location}</p>
+        <p className='listingType'>
           For {listing.type === 'rent' ? 'Rent' : 'Sale'}
         </p>
         {listing.offer && (
-          <p className="discountedPrice">
+          <p className='discountPrice'>
             ${listing.regularPrice - listing.discountedPrice} discount
           </p>
         )}
 
-        <ul className="listingDetailsList">
+        <ul className='listingDetailsList'>
           <li>
             {listing.bedrooms > 1
               ? `${listing.bedrooms} Bedrooms`
@@ -104,9 +109,9 @@ function Listing() {
           <li>{listing.furnished && 'Furnished'}</li>
         </ul>
 
-        <p className="listingLocationTitle">Location</p>
+        <p className='listingLocationTitle'>Location</p>
 
-        <div className="leafletContainer">
+        <div className='leafletContainer'>
           <MapContainer
             style={{ height: '100%', width: '100%' }}
             center={[listing.geolocation.lat, listing.geolocation.lng]}
@@ -115,7 +120,7 @@ function Listing() {
           >
             <TileLayer
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+              url='https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'
             />
 
             <Marker
@@ -129,14 +134,14 @@ function Listing() {
         {auth.currentUser?.uid !== listing.userRef && (
           <Link
             to={`/contact/${listing.userRef}?listingName=${listing.name}`}
-            classname="primaryButton"
+            className='primaryButton'
           >
             Contact Landlord
           </Link>
         )}
       </div>
     </main>
-  );
+  )
 }
 
-export default Listing;
+export default Listing
